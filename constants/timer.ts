@@ -1,9 +1,10 @@
-interface timer {
+type timer = {
   timerName: string;
   initialSeconds: number;
-  id: number;
+  id: string;
   isRunning: boolean;
   secondsLeft: number;
-}
+  timesStopped: number;
+};
 
 export default timer;

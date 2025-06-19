@@ -1,7 +1,8 @@
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+import { task } from "../../constants/tasks"; // adjust path as needed
 
 type Props = {
   initialSeconds: number;
@@ -19,10 +20,17 @@ const formatTime = (s: number) =>
     "0"
   )}`;
 
+const taskList: task[] = [
+  { id: "1", task: "Meditation", completed: false },
+  { id: "2", task: "Workout", completed: true },
+  { id: "3", task: "Study DSA", completed: false },
+  { id: "4", task: "Project Work", completed: true },
+];
+
 const CountdownTimer = ({ initialSeconds, onCancel }: Props) => {
   const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
   const [isRunning, setIsRunning] = useState(true);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const progress = secondsLeft / initialSeconds;
   const strokeDashoffset = circumference * (1 - progress);
@@ -97,6 +105,21 @@ const CountdownTimer = ({ initialSeconds, onCancel }: Props) => {
             {isRunning ? "Pause" : "Resume"}
           </Text>
         </TouchableOpacity>
+      </View>
+      {/* Task List */}
+      <View className="mt-10 w-full px-10">
+        <Text className="text-white text-xl mb-4 font-semibold">
+          Today Tasks
+        </Text>
+        <FlatList
+          data={taskList}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View className="bg-gray-800 rounded-xl px-4 py-3 mb-3">
+              <Text className="text-white text-base">{item.task}</Text>
+            </View>
+          )}
+        />
       </View>
     </View>
   );

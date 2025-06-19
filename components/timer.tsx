@@ -1,10 +1,12 @@
+import useDelete from "@/hooks/useDelete";
+import useFetch from "@/hooks/useFetch";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
+import { Link } from "expo-router";
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 type TimerProps = {
-  initialSeconds: number;
-  timerName: string;
+  id: string;
 };
 
 const formatTime = (seconds: number) => {
@@ -13,60 +15,48 @@ const formatTime = (seconds: number) => {
   return `00:${mins}:${secs}`;
 };
 
-const CountdownTimer = ({ initialSeconds, timerName }: TimerProps) => {
-  const [seconds, setSeconds] = useState(initialSeconds);
-  const [isRunning, setIsRunning] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+const CountdownTimer = ({ id }: TimerProps) => {
+  const { timers, loading } = useFetch();
+  const deleteTimer = useDelete();
 
-  const startTimer = () => {
-    if (!isRunning) {
-      setIsRunning(true);
-      intervalRef.current = setInterval(() => {
-        setSeconds((prev) => {
-          if (prev <= 1) {
-            clearInterval(intervalRef.current!);
-            setIsRunning(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+  // Find the timer by id
+  const timer = timers.find((t) => t.id === id);
+
+  if (loading) return <Text>Loading...</Text>;
+  if (!timer) return null;
+
+  const { timerName, initialSeconds } = timer;
+
+  const handleTimerDelete = async (id: string) => {
+    try {
+      await deleteTimer(id);
+    } catch (error) {
+      console.error("Error deleting timer:", error);
     }
   };
 
-  const resetTimer = () => {
-    clearInterval(intervalRef.current!);
-    setSeconds(initialSeconds);
-    setIsRunning(false);
-  };
-
   return (
-    <View className="bg-neutral-900 rounded-2xl p-5 w-80 self-center items-center">
-      <View>
-        <Text className="text-2xl font-bold text-gray-300">{timerName}</Text>
-      </View>
-      <View className="w-48 h-48 rounded-full border-4 border-neutral-700 items-center justify-center mb-5">
-        <Text className="text-3xl font-bold text-gray-300">
-          {formatTime(seconds)}
-        </Text>
-      </View>
+    <Link href={`/timer/${id}`}>
+      <View className="bg-neutral-900 rounded-2xl p-5 w-80 self-center items-center">
+        <View>
+          <Text className="text-2xl font-bold text-gray-300">{timerName}</Text>
+        </View>
+        <View className="w-48 h-48 rounded-full border-4 border-neutral-700 items-center justify-center mb-5">
+          <Text className="text-3xl font-bold text-gray-300">
+            {formatTime(initialSeconds)}
+          </Text>
+        </View>
 
-      <View className="flex-row space-x-5">
-        <TouchableOpacity
-          onPress={startTimer}
-          className="bg-blue-500 p-3 rounded-full"
-        >
-          <Ionicons name="play" size={24} color="white" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={resetTimer}
-          className="bg-neutral-800 p-3 rounded-full"
-        >
-          <Ionicons name="refresh" size={24} color="gray" />
-        </TouchableOpacity>
+        <View className="flex-row">
+          <TouchableOpacity
+            onPress={() => handleTimerDelete(id)}
+            className="bg-red-600 p-3 rounded-full"
+          >
+            <Ionicons name="trash" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </Link>
   );
 };
 
