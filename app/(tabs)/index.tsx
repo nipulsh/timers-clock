@@ -1,4 +1,4 @@
-import Timer from "@/components/timer";
+import useFetch from "@/hooks/useFetch";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -16,9 +16,7 @@ export default function HomeScreen() {
     })();
   }, []);
 
-  const saveTimers = async (list: number[]) => {
-    await AsyncStorage.setItem("timers", JSON.stringify(list));
-  };
+  const savedTimers = useFetch();
 
   const navigateTimerPage = () => {
     router.push("/new/create"); // 👈 adjust route path if needed
@@ -34,13 +32,9 @@ export default function HomeScreen() {
       </View>
 
       <FlatList
-        data={timers}
+        data={savedTimers}
         keyExtractor={(item) => item.toString()}
-        renderItem={({ item }) => (
-          <View className="mb-3">
-            <Timer id={item} />
-          </View>
-        )}
+        renderItem={({ item }) => <View className="mb-3"></View>}
         ListEmptyComponent={
           <Text className="text-gray-400 mt-4">No timers added yet.</Text>
         }

@@ -1,9 +1,9 @@
+import timeSlot from "@/constants/timeSlot";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import Timer from "../constants/timer";
 
 const useFetch = () => {
-  const [timers, setTimers] = useState<Timer[]>([]);
+  const [timers, setTimers] = useState<timeSlot[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -11,11 +11,12 @@ const useFetch = () => {
       try {
         const jsonValue = await AsyncStorage.getItem("timers");
         if (jsonValue) {
-          const parsed: Timer[] = JSON.parse(jsonValue);
+          const parsed: timeSlot[] = JSON.parse(jsonValue);
           setTimers(parsed);
         } else {
           setTimers([]);
         }
+        console.log("Fetched timers:", timers);
       } catch (error) {
         console.error("Error fetching timers:", error);
         setTimers([]);

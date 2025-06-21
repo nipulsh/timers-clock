@@ -1,16 +1,12 @@
+import timeSlot from "@/constants/timeSlot";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-type Timer = {
-  id: number;
-  timerName: string;
-  initialSeconds: number;
-};
+import Timer from "../constants/timer";
 
 const usePost = () => {
-  const saveTimer = async (newTimer: Timer) => {
+  const saveTimer = async (newTimer: timeSlot) => {
     try {
       const existing = await AsyncStorage.getItem("timers");
-      const timers: Timer[] = existing ? JSON.parse(existing) : [];
+      const timers: timeSlot[] = existing ? JSON.parse(existing) : [];
       const updatedTimers = [...timers, newTimer];
       await AsyncStorage.setItem("timers", JSON.stringify(updatedTimers));
     } catch (error) {

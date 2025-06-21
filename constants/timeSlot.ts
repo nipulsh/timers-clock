@@ -3,15 +3,15 @@ import timer from "./timer";
 
 type timeSlot = {
   id: string;
-  start: string;
-  end: string;
   title: string;
   description: string;
+  start: Date;
+  end: Date;
   color: string;
   dateCreated: string;
-  resetDate: string;
+  resetIntervals: number;
   timer: timer;
-  tasks: tasks[];
+  tasks: tasks;
 };
 
 export default timeSlot;
